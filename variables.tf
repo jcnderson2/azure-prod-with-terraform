@@ -82,3 +82,179 @@ variable "spoke_vnets" {
     }
   }
 }
+
+
+variable "trusted_admin_ips" {
+  description = "Your trusted public IP(s) for admin access"
+  type        = list(string)
+  default     = ["0.0.0.0/0"] # REPLACE
+}
+
+locals {
+  hub_subnets    = module.hub_vnet.hub_subnet_ids
+  spoke1_subnets = module.spoke_vnets["spoke1"].spoke_subnet_ids
+  spoke2_subnets = module.spoke_vnets["spoke2"].spoke_subnet_ids
+  spoke3_subnets = module.spoke_vnets["spoke3"].spoke_subnet_ids
+}
+
+# ---- Hub: Management NSG ----
+locals {
+  hub_mgmt_rules = [
+    {
+      name                         = "Allow-SSH-from-Trusted"
+      priority                     = 100
+      direction                    = "Inbound"
+      access                       = "Allow"
+      protocol                     = "Tcp"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["22"]
+      source_address_prefixes      = var.trusted_admin_ips
+      destination_address_prefixes = ["10.0.2.0/24"]
+      description                  = "SSH from trusted IPs"
+    },
+    {
+      name                         = "Allow-RDP-from-Trusted"
+      priority                     = 110
+      direction                    = "Inbound"
+      access                       = "Allow"
+      protocol                     = "Tcp"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["3389"]
+      source_address_prefixes      = var.trusted_admin_ips
+      destination_address_prefixes = ["10.0.2.0/24"]
+      description                  = "RDP from trusted IPs"
+    },
+    {
+      name                         = "Deny-Internet-Inbound"
+      priority                     = 4000
+      direction                    = "Inbound"
+      access                       = "Deny"
+      protocol                     = "*"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["0-65535"]
+      source_address_prefixes      = ["0.0.0.0/0"]
+      destination_address_prefixes = ["10.0.0.0/16"]
+      description                  = "Block unsolicited internet inbound"
+    }
+  ]
+
+  hub_shared_rules = [
+    {
+      name                         = "Allow-VNet-Inbound"
+      priority                     = 100
+      direction                    = "Inbound"
+      access                       = "Allow"
+      protocol                     = "*"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["0-65535"]
+      source_address_prefixes      = ["10.0.0.0/16"]
+      destination_address_prefixes = ["10.0.0.0/16"]
+      description                  = "Intra-VNet + peering"
+    },
+    {
+      name                         = "Deny-Internet-Inbound"
+      priority                     = 4000
+      direction                    = "Inbound"
+      access                       = "Deny"
+      protocol                     = "*"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["0-65535"]
+      source_address_prefixes      = ["0.0.0.0/0"]
+      destination_address_prefixes = ["10.0.0.0/16"]
+      description                  = "No direct internet inbound"
+    }
+  ]
+
+  spoke1_app_rules = [
+    {
+      name                         = "Allow-HTTPS-In"
+      priority                     = 100
+      direction                    = "Inbound"
+      access                       = "Allow"
+      protocol                     = "Tcp"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["443"]
+      source_address_prefixes      = ["10.0.0.0/16"]
+      destination_address_prefixes = ["10.1.0.0/24"]
+      description                  = "HTTPS from within estate (web tier)"
+    },
+    {
+      name                         = "Allow-HTTP-In"
+      priority                     = 110
+      direction                    = "Inbound"
+      access                       = "Allow"
+      protocol                     = "Tcp"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["80"]
+      source_address_prefixes      = ["10.0.0.0/16"]
+      destination_address_prefixes = ["10.1.0.0/24"]
+      description                  = "HTTP from within estate (web tier)"
+    }
+  ]
+
+  spoke1_db_rules = [
+    {
+      name                         = "Allow-SQL-from-App"
+      priority                     = 100
+      direction                    = "Inbound"
+      access                       = "Allow"
+      protocol                     = "Tcp"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["3601"] # adjust for your DB
+      source_address_prefixes      = ["10.1.0.0/24"]
+      destination_address_prefixes = ["10.1.1.0/24"]
+      description                  = "Allow DB from App subnet"
+    },
+    {
+      name                         = "Deny-All-Else"
+      priority                     = 4096
+      direction                    = "Inbound"
+      access                       = "Deny"
+      protocol                     = "*"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["0-65535"]
+      source_address_prefixes      = ["0.0.0.0/0"]
+      destination_address_prefixes = ["10.1.1.0/24"]
+      description                  = "Default deny"
+    }
+  ]
+
+  spoke2_web_rules = [
+    {
+      name                         = "Allow-HTTP-From-Internet"
+      priority                     = 100
+      direction                    = "Inbound"
+      access                       = "Allow"
+      protocol                     = "Tcp"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["80"]
+      source_address_prefixes      = ["0.0.0.0/0"]
+      destination_address_prefixes = ["10.2.0.0/24"]
+    },
+    {
+      name                         = "Allow-HTTPS-From-Internet"
+      priority                     = 110
+      direction                    = "Inbound"
+      access                       = "Allow"
+      protocol                     = "Tcp"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["443"]
+      source_address_prefixes      = ["0.0.0.0/0"]
+      destination_address_prefixes = ["10.2.0.0/24"]
+    }
+  ]
+
+  spoke3_batch_rules = [
+    {
+      name                         = "Deny-Internet-Inbound"
+      priority                     = 4000
+      direction                    = "Inbound"
+      access                       = "Deny"
+      protocol                     = "*"
+      source_port_ranges           = ["0-65535"]
+      destination_port_ranges      = ["0-65535"]
+      source_address_prefixes      = ["0.0.0.0/0"]
+      destination_address_prefixes = ["10.3.0.0/24"]
+    }
+  ]
+}
