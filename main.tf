@@ -26,3 +26,14 @@ module "spoke_vnets" {
   subnets        = each.value.subnets
   resource_group = module.rg_main.name
 }
+
+module "vnet_peering" {
+  source         = "./modules/vnet-peering"
+  hub_vnet_id    = module.hub_vnet.hub_vnet_id
+  hub_vnet_name  = var.hub_vnet_name
+  spoke_vnets    = {
+    for k, v in module.spoke_vnets :
+    k => { name = v.spoke_vnet_name, vnet_id = v.spoke_vnet_id }
+  }
+  resource_group = module.rg_main.name
+}
