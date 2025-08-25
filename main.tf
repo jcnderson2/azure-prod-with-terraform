@@ -128,3 +128,11 @@ module "law" {
   retention_in_days   = 30
   tags                = var.default_tags
 }
+
+module "network_watcher" {
+  source              = "./modules/network-watcher"
+  name                = "prod-nw"
+  location            = var.location
+  resource_group_name = module.rg_main.name
+  tags                = var.default_tags
+}
