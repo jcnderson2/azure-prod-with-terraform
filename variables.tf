@@ -39,11 +39,12 @@ variable "hub_subnets" {
     address_prefix = string
   }))
   default = {
-    gateway    = { name = "GatewaySubnet", address_prefix = "10.0.0.0/27" }
-    firewall   = { name = "AzureFirewallSN", address_prefix = "10.0.0.64/26" }
-    shared     = { name = "snet-shared", address_prefix = "10.0.1.0/24" }
-    management = { name = "snet-management", address_prefix = "10.0.2.0/24" }
-    data       = { name = "snet-data", address_prefix = "10.0.3.0/24" }
+    gateway    = { name = "GatewaySubnet",     address_prefix = "10.0.0.96/27" }
+    firewall   = { name = "AzureFirewallSN",   address_prefix = "10.0.0.0/26" }
+    bastion    = { name = "AzureBastionSubnet",address_prefix = "10.0.0.64/27" }
+    management = { name = "snet-management",   address_prefix = "10.0.2.0/24" }
+    shared     = { name = "snet-shared",       address_prefix = "10.0.1.0/24" }
+    data       = { name = "snet-data",         address_prefix = "10.0.3.0/24" }
   }
 }
 
@@ -100,30 +101,6 @@ locals {
 # ---- Hub: Management NSG ----
 locals {
   hub_mgmt_rules = [
-    {
-      name                         = "Allow-SSH-from-Trusted"
-      priority                     = 100
-      direction                    = "Inbound"
-      access                       = "Allow"
-      protocol                     = "Tcp"
-      source_port_ranges           = ["0-65535"]
-      destination_port_ranges      = ["22"]
-      source_address_prefixes      = var.trusted_admin_ips
-      destination_address_prefixes = ["10.0.2.0/24"]
-      description                  = "SSH from trusted IPs"
-    },
-    {
-      name                         = "Allow-RDP-from-Trusted"
-      priority                     = 110
-      direction                    = "Inbound"
-      access                       = "Allow"
-      protocol                     = "Tcp"
-      source_port_ranges           = ["0-65535"]
-      destination_port_ranges      = ["3389"]
-      source_address_prefixes      = var.trusted_admin_ips
-      destination_address_prefixes = ["10.0.2.0/24"]
-      description                  = "RDP from trusted IPs"
-    },
     {
       name                         = "Deny-Internet-Inbound"
       priority                     = 4000
