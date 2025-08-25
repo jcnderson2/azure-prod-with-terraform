@@ -110,3 +110,12 @@ module "nsg_spoke3_batch" {
   }
   security_rules = local.spoke3_batch_rules
 }
+
+module "bastion" {
+  source              = "./modules/bastion"
+  name                = "bastion-hub"
+  location            = var.location
+  resource_group_name = module.rg_main.name
+  subnet_id           = local.hub_subnets["bastion"]
+  tags                = var.default_tags
+}
