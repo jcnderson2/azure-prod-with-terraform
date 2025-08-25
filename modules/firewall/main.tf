@@ -31,7 +31,6 @@ resource "azurerm_firewall" "hub" {
 resource "azurerm_monitor_diagnostic_setting" "fw_diag" {
   name                       = "fw-diag"
   target_resource_id         = azurerm_firewall.hub.id
-  log_analytics_workspace_id = var.law_id
 
   enabled_log {
     category = "AzureFirewallApplicationRule"
