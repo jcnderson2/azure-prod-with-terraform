@@ -128,15 +128,6 @@ module "bastion" {
   tags                = var.default_tags
 }
 
-module "law" {
-  source              = "./modules/LAW"
-  name                = "law-hub"
-  location            = var.location
-  resource_group_name = module.rg_main.name
-  retention_in_days   = 30
-  tags                = var.default_tags
-}
-
 module "network_watcher" {
   source              = "./modules/network-watcher"
   name                = "prod-nw"
