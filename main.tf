@@ -111,6 +111,14 @@ module "nsg_spoke3_batch" {
   security_rules = local.spoke3_batch_rules
 }
 
+module "firewall" {
+  source              = "./modules/firewall"
+  rg_name             = module.rg_main.name
+  location            = var.location
+  firewall_subnet_id  = module.hub_vnet.hub_subnet_ids["firewall"]
+  law_id              = module.law.workspace_id
+}
+
 module "bastion" {
   source              = "./modules/bastion"
   name                = "bastion-hub"

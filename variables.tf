@@ -40,7 +40,7 @@ variable "hub_subnets" {
   }))
   default = {
     gateway    = { name = "GatewaySubnet", address_prefix = "10.0.0.96/27" }
-    firewall   = { name = "AzureFirewallSN", address_prefix = "10.0.0.0/26" }
+    firewall   = { name = "AzureFirewallSubnet", address_prefix = "10.0.0.0/26" }
     bastion    = { name = "AzureBastionSubnet", address_prefix = "10.0.0.64/27" }
     management = { name = "snet-management", address_prefix = "10.0.2.0/24" }
     shared     = { name = "snet-shared", address_prefix = "10.0.1.0/24" }
