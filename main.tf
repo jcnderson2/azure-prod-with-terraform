@@ -116,6 +116,10 @@ module "firewall" {
   rg_name            = module.rg_main.name
   location           = var.location
   firewall_subnet_id = module.hub_vnet.hub_subnet_ids["firewall"]
+<<<<<<< HEAD
+=======
+  law_id             = module.log_analytics.law_id
+>>>>>>> be393fd (added root call and piped in firewall)
 }
 
 module "bastion" {
@@ -133,4 +137,11 @@ module "network_watcher" {
   location            = var.location
   resource_group_name = module.rg_main.name
   tags                = var.default_tags
+}
+
+module "log_analytics" {
+  source   = "./modules/law"
+  rg_name  = module.rg_main.name
+  location = var.location
+  law_name = "law-prod-infra"
 }
