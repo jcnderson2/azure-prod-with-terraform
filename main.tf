@@ -112,10 +112,10 @@ module "nsg_spoke3_batch" {
 }
 
 module "firewall" {
-  source              = "./modules/firewall"
-  rg_name             = module.rg_main.name
-  location            = var.location
-  firewall_subnet_id  = module.hub_vnet.hub_subnet_ids["firewall"]
+  source             = "./modules/firewall"
+  rg_name            = module.rg_main.name
+  location           = var.location
+  firewall_subnet_id = module.hub_vnet.hub_subnet_ids["firewall"]
 }
 
 module "bastion" {

@@ -28,17 +28,17 @@ resource "azurerm_firewall" "hub" {
   }
 }
 
-resource "azurerm_monitor_diagnostic_setting" "fw_diag" {
-  name                       = "fw-diag"
-  target_resource_id         = azurerm_firewall.hub.id
-
-  enabled_log {
-    category = "AzureFirewallApplicationRule"
-  }
-  enabled_log {
-    category = "AzureFirewallNetworkRule"
-  }
-  enabled_log {
-    category = "AzureFirewallDnsProxy"
-  }
-}
+# resource "azurerm_monitor_diagnostic_setting" "fw_diag" {
+#  name                       = "fw-diag"
+#  target_resource_id         = azurerm_firewall.hub.id
+# 
+#  enabled_log {
+#    category = "AzureFirewallApplicationRule"
+#  }
+#  enabled_log {
+#    category = "AzureFirewallNetworkRule"
+#  }
+#  enabled_log {
+#    category = "AzureFirewallDnsProxy"
+#  }
+#}
