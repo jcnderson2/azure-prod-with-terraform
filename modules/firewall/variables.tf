@@ -12,3 +12,9 @@ variable "firewall_subnet_id" {
   description = "Subnet ID for the Azure Firewall"
   type        = string
 }
+
+variable "law_id" {
+  description = "Log Analytics Workspace ID for diagnostic settings"
+  type        = string
+  default     = null
+}
