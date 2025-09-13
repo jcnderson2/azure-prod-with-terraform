@@ -116,10 +116,7 @@ module "firewall" {
   rg_name            = module.rg_main.name
   location           = var.location
   firewall_subnet_id = module.hub_vnet.hub_subnet_ids["firewall"]
-<<<<<<< HEAD
-=======
   law_id             = module.log_analytics.law_id
->>>>>>> be393fd (added root call and piped in firewall)
 }
 
 module "bastion" {
