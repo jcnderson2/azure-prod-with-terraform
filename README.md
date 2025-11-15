@@ -1,15 +1,16 @@
 # Overview
 This project builds a production-grade Azure networking foundation using Terraform.
 It follows a Hub-and-Spoke topology, where the Hub hosts shared services (Firewall, Bastion, Log Analytics Workspace) and multiple Spokes host application, database, and batch workloads.
-
+```
 The design follows enterprise best practices for:
 •	Network isolation & segmentation
 •	Centralized firewalling and logging
 •	Role separation (infrastructure vs. apps)
 •	Terraform modularity for reusability
-
+```
 
 ## Architecture
+```
 •	Hub VNet
 •	Subnets: GatewaySubnet, AzureFirewallSubnet, AzureBastionSubnet, Management, Shared, Data
 •	Azure Firewall (with diagnostic logging to LAW)
@@ -25,7 +26,7 @@ The design follows enterprise best practices for:
 •	Application- and DB-tier isolation
 •	Diagnostics
 •	Firewall logs, NSG flow logs, and Bastion diagnostics sent to Log Analytics Workspace
-
+```
 
 ## Project Structure
 ```
@@ -47,6 +48,7 @@ The design follows enterprise best practices for:
 ```
 
 ## Outputs
+```
 On successful deployment, Terraform outputs:
 •	Resource Group name
 •	Hub VNet ID
@@ -54,9 +56,11 @@ On successful deployment, Terraform outputs:
 •	Firewall ID & Public IP
 •	Bastion ID
 •	Log Analytics Workspace ID
-
+```
 
 ## Notes
+```
 •	No VMs are deployed — focus is on network & security infrastructure.
 •	Proof of operation is available via Terraform outputs and portal inspection.
 •	Can be extended with VMs, AKS, or App Services if needed.
+```
