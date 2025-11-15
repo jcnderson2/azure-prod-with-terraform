@@ -28,6 +28,7 @@ The design follows enterprise best practices for:
 
 
 ## Project Structure
+```
 .
 ├── main.tf
 ├── providers.tf
@@ -43,7 +44,7 @@ The design follows enterprise best practices for:
 │   ├── firewall/
 │   ├── bastion/
 │   └── LAW/
-
+```
 
 ## Outputs
 On successful deployment, Terraform outputs:
